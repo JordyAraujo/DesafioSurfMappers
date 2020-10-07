@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<ul>{% for user in users %}
+<ul>{% for img in pics %}
     <li>
-        <p>{{ user }}</p>
+        <img src={{ img }} height="200px">
     </li>
     {% endfor %}</ul>
 {% endblock %}
