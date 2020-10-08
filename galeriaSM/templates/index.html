@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-<ul>{% for img in pics %}
+
+<ul>{% for img in files %}
     <li>
-        <img src={{ img }} height="200px">
+        <img src='/files/{{img}}' height="200px">
     </li>
     {% endfor %}</ul>
 {% endblock %}
