@@ -1,14 +1,20 @@
 <html>
-    <head>
-      {% if title %}
-      <title>{{ title }}</title>
-      {% else %}
-      <title>Galeria</title>
-      {% endif %}
-    </head>
-    <body>
-        <div><a href="/index">Galeria</a></div>
-        <hr>
-        {% block content %}{% endblock %}
-    </body>
+
+<head>
+  {% if title %}
+  <title>{{ title }}</title>
+  {% else %}
+  <title>Galeria</title>
+  {% endif %}
+</head>
+
+<body>
+  <div>
+    <a href="{{ url_for('index') }}">Galeria</a>
+    <a href="{{ url_for('upload') }}">Upload</a>
+  </div>
+  <hr>
+  {% block content %}{% endblock %}
+</body>
+
 </html>
