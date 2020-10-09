@@ -25,7 +25,6 @@ def allowed_image(filename):
 def index():
     files = []
     for obj in s3.list_objects_v2(Bucket=bucket)['Contents']:
-        print(obj['Key'])
         files.append(obj['Key'])
     return render_template('index.html', title='Galeria', files=files)
 
@@ -51,7 +50,6 @@ def upload():
 
 @app.route("/files")
 def list_files():
-    """Endpoint to list files on the server."""
     files = []
     for filename in os.listdir(app.config["UPLOAD_FOLDER"]):
         path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
