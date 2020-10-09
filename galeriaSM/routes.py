@@ -4,8 +4,9 @@ from werkzeug.utils import secure_filename
 import os
 import boto3
 
-s3=boto3.client('s3')
+s3 = boto3.client('s3')
 bucket = 'galeriasmbucket'
+
 
 def allowed_image(filename):
 
@@ -20,17 +21,9 @@ def allowed_image(filename):
         return False
 
 
-@app.route('/')
-@app.route('/index')
+@app.route("/")
+@app.route("/index", methods=["GET", "POST"])
 def index():
-    files = []
-    for obj in s3.list_objects_v2(Bucket=bucket)['Contents']:
-        files.append(obj['Key'])
-    return render_template('index.html', title='Galeria', files=files)
-
-
-@app.route("/upload", methods=["GET", "POST"])
-def upload():
     if request.method == "POST":
         if request.files:
             image = request.files["image"]
@@ -41,11 +34,19 @@ def upload():
                 filename = secure_filename(image.filename)
                 s3.upload_fileobj(image, 'galeriasmbucket', filename)
                 print("Imagem salva")
-                return redirect(url_for('index'))
+                return redirect(url_for('galeria'))
             else:
                 print("Formato de arquivo não permitido")
                 return redirect(redirect.url)
-    return render_template("upload.html")
+    return render_template("index.html")
+
+
+@app.route('/galeria')
+def galeria():
+    files = []
+    for obj in s3.list_objects_v2(Bucket=bucket)['Contents']:
+        files.append(obj['Key'])
+    return render_template('galeria.html', title='Galeria', files=files)
 
 
 @app.route("/files")
