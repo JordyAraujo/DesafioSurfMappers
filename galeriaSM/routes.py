@@ -2,7 +2,10 @@ from flask import render_template, request, redirect, jsonify, send_from_directo
 from galeriaSM import app
 from werkzeug.utils import secure_filename
 import os
+import boto3
 
+s3=boto3.client('s3')
+bucket = 'galeriasmbucket'
 
 def allowed_image(filename):
 
@@ -21,10 +24,9 @@ def allowed_image(filename):
 @app.route('/index')
 def index():
     files = []
-    for filename in os.listdir(app.config["UPLOAD_FOLDER"]):
-        path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-        if os.path.isfile(path):
-            files.append(filename)
+    for obj in s3.list_objects_v2(Bucket=bucket)['Contents']:
+        print(obj['Key'])
+        files.append(obj['Key'])
     return render_template('index.html', title='Galeria', files=files)
 
 
@@ -38,8 +40,7 @@ def upload():
                 return redirect(request.url)
             if allowed_image(image.filename):
                 filename = secure_filename(image.filename)
-                image.save(os.path.join(
-                    app.config["UPLOAD_FOLDER"], image.filename))
+                s3.upload_fileobj(image, 'galeriasmbucket', filename)
                 print("Imagem salva")
                 return redirect(url_for('index'))
             else:
