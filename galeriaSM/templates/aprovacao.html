@@ -4,8 +4,7 @@
 
 <ul>{% for img in files %}
     <li>
-        <img src='https://galeriasmbucket.s3-sa-east-1.amazonaws.com/{{img}}' height="200px">
-        {{img}}
+        <img src={{img}} height="200px">
     </li>
     {% endfor %}</ul>
 {% endblock %}

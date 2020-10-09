@@ -34,19 +34,25 @@ def index():
                 filename = secure_filename(image.filename)
                 s3.upload_fileobj(image, 'galeriasmbucket', filename)
                 print("Imagem salva")
-                return redirect(url_for('galeria'))
+                return redirect(url_for('aprovacao'))
             else:
                 print("Formato de arquivo não permitido")
                 return redirect(redirect.url)
     return render_template("index.html")
 
 
-@app.route('/galeria')
-def galeria():
+@app.route('/aprovacao')
+def aprovacao():
     files = []
     for obj in s3.list_objects_v2(Bucket=bucket)['Contents']:
-        files.append(obj['Key'])
-    return render_template('galeria.html', title='Galeria', files=files)
+        url = s3.generate_presigned_url('get_object',
+                                        Params={
+                                            'Bucket': bucket,
+                                            'Key': obj['Key']
+                                        },
+                                        ExpiresIn=3600)
+        files.append(url)
+    return render_template('aprovacao.html', title='Aprovação', files=files)
 
 
 @app.route("/files")
