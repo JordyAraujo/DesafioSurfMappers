@@ -29,7 +29,7 @@ def index():
             image = request.files["image"]
             if image.filename == "":
                 print("No filename")
-                return redirect(request.url)
+                return redirect(url_for('index'))
             if allowed_image(image.filename):
                 filename = secure_filename(image.filename)
                 s3.upload_fileobj(image, 'galeriasmbucket', filename)
@@ -41,9 +41,10 @@ def index():
     return render_template("index.html")
 
 
-@app.route('/aprovacao')
+@app.route("/aprovacao", methods=["GET", "POST"])
 def aprovacao():
     files = []
+    names = []
     for obj in s3.list_objects_v2(Bucket=bucket)['Contents']:
         url = s3.generate_presigned_url('get_object',
                                         Params={
@@ -52,20 +53,20 @@ def aprovacao():
                                         },
                                         ExpiresIn=3600)
         files.append(url)
-    return render_template('aprovacao.html', title='Aprovação', files=files)
+        names.append(obj['Key'])
+    return render_template('aprovacao.html', title='Aprovação', files=files, names=names)
 
-
-@app.route("/files")
-def list_files():
+@app.route("/galeria", methods=["GET", "POST"])
+def galeria():
     files = []
-    for filename in os.listdir(app.config["UPLOAD_FOLDER"]):
-        path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-        if os.path.isfile(path):
-            files.append(filename)
-    return jsonify(files)
-
-
-@app.route("/files/<path:path>")
-def get_file(path):
-    """Download a file."""
-    return send_from_directory(app.config["UPLOAD_FOLDER"], path, as_attachment=True)
+    if request.method == "POST":
+        filenames = request.form.getlist('image')
+    for obj in filenames:
+        url = s3.generate_presigned_url('get_object',
+                                        Params={
+                                            'Bucket': bucket,
+                                            'Key': obj
+                                        },
+                                        ExpiresIn=3600)
+        files.append(url)
+    return render_template('galeria.html', files=files)
