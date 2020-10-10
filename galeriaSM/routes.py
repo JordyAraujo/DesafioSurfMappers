@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, jsonify, send_from_directory, url_for
+from flask import render_template, request, redirect, url_for
 from galeriaSM import app
 from werkzeug.utils import secure_filename
 import os
