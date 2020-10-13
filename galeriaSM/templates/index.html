@@ -1,14 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% set cont = 0 %}
 
-        {% for img in files %}
-            <li>
-                <img src={{img}} height="200px">
-            </li>
-        {% endfor %}
-    </ul>
+{% for img in files %}
+<li>
+    <img src={{img}} height="200px">
+</li>
+{% endfor %}
+{% if login %}
+<a href="{{ url_for('aprovacao') }}">Aprovação</a>
+{% endif %}
+</ul>
 
 
 {% endblock %}

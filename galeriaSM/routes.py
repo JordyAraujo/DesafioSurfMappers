@@ -12,6 +12,13 @@ bucket = 'galeriasmbucket'
 class Files():
 
     filenames = []
+    login = False
+
+    def get_login(self):
+        return self.login
+
+    def set_login(self, logged):
+        self.login = logged
 
     def get_filenames(self):
         return self.filenames
@@ -43,6 +50,7 @@ def index():
     if request.method == "POST":
         selected = request.form.getlist('image')
         f.set_filenames(selected)
+        f.set_login(True)
     else:
         selected = f.get_filenames()
     if not selected:
@@ -55,7 +63,7 @@ def index():
                                         },
                                         ExpiresIn=3600)
         files.append(url)
-    return render_template('index.html', files=files)
+    return render_template('index.html', files=files, login=f.get_login)
 
 
 @app.route("/upload", methods=["GET", "POST"])
