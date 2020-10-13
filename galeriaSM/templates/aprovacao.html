@@ -1,19 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% set cont = 0 %}
 
-<form action="/galeria" method="POST" enctype="multipart/form-data">
+<form action="/index" method="POST" enctype="multipart/form-data">
     <ul>
-        {% for img in files %}
-            <li>
-                <label><img src={{img}} height="200px"></label>
-                <input type="checkbox" value={{names[cont]}} name="image" unchecked>
-                {% set cont = cont + 1 %}
-            </li>
+        {% for file in files %}
+        <li>
+            <label><img src={{files[file].url}} height="200px"></label>
+            <input type="checkbox" value={{files[file].name}} name="image" unchecked>
+        </li>
         {% endfor %}
     </ul>
-    <button type="submit">Upload</button>
+    <button type="submit">Salvar</button>
 </form>
-
 {% endblock %}
