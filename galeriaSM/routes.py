@@ -63,7 +63,7 @@ def index():
                                         },
                                         ExpiresIn=3600)
         files.append(url)
-    return render_template('index.html', files=files, login=f.get_login)
+    return render_template('index.html', files=files, logged=f.get_login())
 
 
 @app.route("/upload", methods=["GET", "POST"])
@@ -78,11 +78,11 @@ def upload():
                 filename = secure_filename(image.filename)
                 s3.upload_fileobj(image, 'galeriasmbucket', filename)
                 flash("Imagem salva")
-                return redirect(url_for('index'))
+                return redirect(url_for('upload'))
             else:
                 flash("Formato de arquivo não permitido")
                 return redirect(url_for('upload'))
-    return render_template("upload.html")
+    return render_template("upload.html", logged=f.get_login())
 
 
 @app.route('/login', methods=["GET", "POST"])
@@ -92,7 +92,7 @@ def login():
         flash("Seja bem vindo, {}!".format(
             form.username.data))
         return redirect('/aprovacao')
-    return render_template('login.html', title='Sign In', form=form)
+    return render_template('login.html', title='Sign In', form=form, logged=f.get_login())
 
 
 @app.route("/aprovacao", methods=["GET", "POST"])
@@ -108,4 +108,4 @@ def aprovacao():
                                         ExpiresIn=3600)
         files[cont] = {'name': obj['Key'], 'url': url}
         cont = cont + 1
-    return render_template('aprovacao.html', title='Aprovação', files=files)
+    return render_template('aprovacao.html', title='Aprovação', files=files, logged=f.get_login())
