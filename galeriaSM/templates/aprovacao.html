@@ -6,8 +6,8 @@
     <ul class="list-group">
         {% for file in files %}
         <li class="list-group-item">
-            <input type="checkbox" value={{files[file].name}} name="image" unchecked>
-            <label><img src={{files[file].url}} class="imagem"></label>
+            <input type="checkbox" class="largerCheckbox" value={{files[file].name}} name="image" unchecked>
+            <img src={{files[file].url}} class="imagem">
         </li>
         {% endfor %}
     </ul>
