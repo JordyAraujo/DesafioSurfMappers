@@ -33,9 +33,12 @@ A tela de aprovação é visível apenas para usuários logados e permite visual
 python3 -m venv venv
 source venv/bin/activate
 pip3 install -r requirements.txt
+touch .secrets.py
+```
+> Definir as credenciais AWS_ACCESS_KEY_ID e AWS_SECRET_ACCESS_KEY em /.secrets.py
+```sh
 flask run
 ```  
-> Definir as credenciais AWS em /config.py
 
 
 ## Autor

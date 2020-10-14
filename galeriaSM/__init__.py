@@ -1,9 +1,9 @@
 from flask import Flask
-from config import Config
+from dynaconf import FlaskDynaconf
 from flask_bootstrap import Bootstrap
 
 app = Flask(__name__)
-app.config.from_object(Config)
+FlaskDynaconf(app)
 
 bootstrap = Bootstrap(app)
 

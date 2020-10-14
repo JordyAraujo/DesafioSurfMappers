@@ -219,3 +219,5 @@ dmypy.json
 
 galeriaSM/uploads/*
 !galeriaSM/uploads/.keep
+# Ignore dynaconf secret files
+.secrets.*

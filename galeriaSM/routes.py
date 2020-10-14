@@ -2,17 +2,18 @@ from flask import render_template, flash, request, redirect, url_for
 from galeriaSM import app
 from werkzeug.utils import secure_filename
 from galeriaSM.forms import LoginForm, UploadForm
+from config import settings
 import os
 import boto3
 
 s3 = boto3.client(
     's3',
-    aws_access_key_id = app.config["AWS_ACCESS_KEY_ID"],
-    aws_secret_access_key = app.config["AWS_SECRET_ACCESS_KEY"],
-    region_name = app.config["AWS_REGION_NAME"]
+    aws_access_key_id = settings.AWS_ACCESS_KEY_ID,
+    aws_secret_access_key = settings.AWS_SECRET_ACCESS_KEY,
+    region_name = settings.AWS_REGION_NAME
 )
 
-bucket = app.config["BUCKET"]
+bucket = settings.BUCKET
 
 
 class Files():
@@ -43,7 +44,7 @@ def allowed_image(filename):
 
     ext = filename.rsplit(".", 1)[1]
 
-    if ext.upper() in app.config["ALLOWED_EXTENSIONS"]:
+    if ext.upper() in settings.ALLOWED_EXTENSIONS:
         return True
     else:
         return False
