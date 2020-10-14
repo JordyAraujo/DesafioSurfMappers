@@ -12,7 +12,6 @@ COPY galeriasm galeriasm
 COPY migrations migrations
 COPY run.py config.py boot.sh ./
 RUN chmod +x boot.sh
-RUN printf 'AWS_ACCESS_KEY_ID = "AKIA5VIHLDO3PDEYTTZP"\nAWS_SECRET_ACCESS_KEY = "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"\nBUCKET = "galeriasmbucket"\nAWS_REGION_NAME = "sa-east-1"' > .secrets.py
 
 ENV FLASK_APP run.py
 
