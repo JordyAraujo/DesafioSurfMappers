@@ -3,7 +3,7 @@ from dynaconf import Dynaconf
 
 settings = Dynaconf(
     envvar_prefix="DYNACONF",
-    settings_files=['settings.py', '.secrets.py'],
+    settings_files=["settings.py", ".secrets.py"],
 )
 
 # `envvar_prefix` = export envvars with `export DYNACONF_FOO=bar`.

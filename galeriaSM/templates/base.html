@@ -1,4 +1,4 @@
-{% extends 'bootstrap/base.html' %}
+{% extends "bootstrap/base.html" %}
 
 {% block title %}
   {% if title %}
@@ -19,21 +19,21 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="{{ url_for('index') }}">GaleriaSM</a>
+        <a class="navbar-brand" href="{{ url_for("index") }}">GaleriaSM</a>
       </div>
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-          <li><a href="{{ url_for('index') }}">Galeria</a></li>
-          <li><a href="{{ url_for('upload') }}">Upload</a></li>
+          <li><a href="{{ url_for("index") }}">Galeria</a></li>
+          <li><a href="{{ url_for("upload") }}">Upload</a></li>
           {% if logged %}
-            <li><a href="{{ url_for('aprovacao') }}">Aprovação</a></li>
+            <li><a href="{{ url_for("aprovacao") }}">Aprovação</a></li>
           {% endif %}
         </ul>
         <ul class="nav navbar-nav navbar-right">
           {% if not logged %}
-            <li><a href="{{ url_for('login') }}">Login</a></li>
+            <li><a href="{{ url_for("login") }}">Login</a></li>
           {% else %}
-            <li><a href="{{ url_for('logoff') }}">Logout</a></li>
+            <li><a href="{{ url_for("logoff") }}">Logout</a></li>
           {% endif %}
         </ul>
       </div>
@@ -42,6 +42,12 @@
 {% endblock %}
 
 {% block content %}
+  <style>
+    .imagem {
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
   <div class="container">
     {% with messages = get_flashed_messages() %}
       {% if messages %}

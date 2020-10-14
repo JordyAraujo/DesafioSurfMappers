@@ -4,11 +4,11 @@ from wtforms.validators import DataRequired
 
 
 class LoginForm(FlaskForm):
-    username = StringField('Login', validators=[DataRequired()])
-    password = PasswordField('Senha', validators=[DataRequired()])
-    submit = SubmitField('Sign In')
+    username = StringField("Login", validators=[DataRequired()])
+    password = PasswordField("Senha", validators=[DataRequired()])
+    submit = SubmitField("Sign In")
 
 
 class UploadForm(FlaskForm):
-    image = FileField('Escolha seu arquivo', validators=[DataRequired()])
-    submit = SubmitField('Upload')
+    image = FileField("Escolha seu arquivo", validators=[DataRequired()])
+    submit = SubmitField("Upload")
