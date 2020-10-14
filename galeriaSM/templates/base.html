@@ -30,8 +30,9 @@
           {% endif %}
         </ul>
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="{{ url_for('login') }}">Login</a></li>
-          {% if logged %}
+          {% if not logged %}
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+          {% else %}
             <li><a href="{{ url_for('logoff') }}">Logout</a></li>
           {% endif %}
         </ul>

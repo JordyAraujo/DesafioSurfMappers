@@ -3,11 +3,11 @@
 {% block app_content %}
 
 <form action="/index" method="POST" enctype="multipart/form-data">
-    <ul>
+    <ul class="list-group">
         {% for file in files %}
-        <li>
-            <label><img src={{files[file].url}} height="200px"></label>
+        <li class="list-group-item">
             <input type="checkbox" value={{files[file].name}} name="image" unchecked>
+            <label><img src={{files[file].url}} height="200px"></label>
         </li>
         {% endfor %}
     </ul>
