@@ -1,7 +1,7 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from datetime import datetime
-from galeriaSM import db, login
+from galeriasm import db, login
 
 
 @login.user_loader

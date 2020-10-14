@@ -1,1 +1,1 @@
-from galeriaSM import app
+from galeriasm import app

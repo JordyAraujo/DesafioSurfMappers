@@ -1,10 +1,10 @@
 from flask import render_template, flash, request, redirect, url_for
 from flask_login import current_user, login_user, logout_user, login_required
-from galeriaSM import app, db
+from galeriasm import app, db
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
-from galeriaSM.forms import LoginForm, UploadForm
-from galeriaSM.models import User, File
+from galeriasm.forms import LoginForm, UploadForm
+from galeriasm.models import User, File
 from config import settings
 import os
 import boto3

@@ -16,4 +16,4 @@ bootstrap = Bootstrap(app)
 login = LoginManager(app)
 login.login_view = 'login'
 
-from galeriaSM import routes, models
+from galeriasm import routes, models
