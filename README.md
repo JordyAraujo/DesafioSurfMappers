@@ -35,8 +35,9 @@ source venv/bin/activate
 pip3 install -r requirements.txt
 flask run
 ```  
+> Definir as credenciais AWS em /config.py
 
 
 ## Autor
 
-Jordy Araújo – [@TimbuAstronauta](https://twitter.com/TimbuAstronauta) – jordyaraujo@outlook.com
+Jordy Araújo – jordyaraujo@outlook.com
