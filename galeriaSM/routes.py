@@ -1,16 +1,19 @@
 from flask import render_template, flash, request, redirect, url_for
-from galeriaSM import app
+from flask_login import current_user, login_user, logout_user, login_required
+from galeriaSM import app, db
 from werkzeug.utils import secure_filename
+from werkzeug.urls import url_parse
 from galeriaSM.forms import LoginForm, UploadForm
+from galeriaSM.models import User, File
 from config import settings
 import os
 import boto3
 
 s3 = boto3.client(
     "s3",
-    aws_access_key_id = settings.AWS_ACCESS_KEY_ID,
-    aws_secret_access_key = settings.AWS_SECRET_ACCESS_KEY,
-    region_name = settings.AWS_REGION_NAME
+    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+    region_name=settings.AWS_REGION_NAME
 )
 
 bucket = settings.BUCKET
@@ -19,13 +22,6 @@ bucket = settings.BUCKET
 class Files():
 
     filenames = []
-    login = False
-
-    def get_login(self):
-        return self.login
-
-    def set_login(self, logged):
-        self.login = logged
 
     def get_filenames(self):
         return self.filenames
@@ -50,6 +46,11 @@ def allowed_image(filename):
         return False
 
 
+@app.shell_context_processor
+def make_shell_context():
+    return {"db": db, "User": User, "File": File}
+
+
 @app.route("/")
 @app.route("/index", methods=["GET", "POST"])
 def index():
@@ -60,7 +61,7 @@ def index():
     else:
         selected = f.get_filenames()
     if not selected:
-        flash("Nada a mostrar")
+        flash("Nenhuma imagem aprovada")
     for obj in selected:
         url = s3.generate_presigned_url("get_object",
                                         Params={
@@ -69,7 +70,7 @@ def index():
                                         },
                                         ExpiresIn=3600)
         files.append(url)
-    return render_template("index.html", files=files, logged=f.get_login())
+    return render_template("index.html", files=files)
 
 
 @app.route("/upload", methods=["GET", "POST"])
@@ -79,44 +80,58 @@ def upload():
         image = request.files["image"]
         filename = secure_filename(image.filename)
         s3.upload_fileobj(image, bucket, filename)
+        f = File(name=filename)
+        db.session.add(f)
+        db.session.commit()
+        saved_files = File.query.all()
+        for sf in saved_files:
+            print(sf.name)
         flash("Imagem salva")
         return redirect(url_for("upload"))
-    return render_template("upload.html", title="Upload", form=form, logged=f.get_login())
+    return render_template("upload.html", title="Upload", form=form)
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if current_user.is_authenticated:
+        flash("Usuário já autenticado!")
+        return redirect(url_for("aprovacao"))
     form = LoginForm()
     if form.validate_on_submit():
-        flash("Seja bem vindo, {}!".format(
-            form.username.data))
-        f.set_login(True)
-        return redirect(url_for("aprovacao"))
-    return render_template("login.html", title="Sign In", form=form, logged=f.get_login())
+        user = User.query.filter_by(username=form.username.data).first()
+        if user is None or not user.check_password(form.password.data):
+            flash("Usuário e/ou senha inválidos!")
+            return redirect(url_for("login"))
+        login_user(user, remember=form.remember_me.data)
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('aprovacao')
+        return redirect(next_page)
+    return render_template("login.html", title="Sign In", form=form)
 
 
-@app.route("/logoff", methods=["GET", "POST"])
-def logoff():
-    flash("Usuário desconectado!")
-    f.set_login(False)
-    return render_template("index.html", title="Galeria", logged=f.get_login())
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for("index"))
 
 
 @app.route("/aprovacao", methods=["GET", "POST"])
 def aprovacao():
-    if f.get_login():
+    if current_user.is_authenticated:
         files = {}
         cont = 0
-        for obj in s3.list_objects_v2(Bucket=bucket)["Contents"]:
+        saved_files = File.query.all()
+        for sf in saved_files:
             url = s3.generate_presigned_url("get_object",
                                             Params={
-                                                "Bucket": bucket,
-                                                "Key": obj["Key"]
+                                                "Bucket": settings.BUCKET,
+                                                "Key": sf.name
                                             },
                                             ExpiresIn=3600)
-            files[cont] = {"name": obj["Key"], "url": url}
+            files[cont] = {"name": sf.name, "url": url}
             cont = cont + 1
-        return render_template("aprovacao.html", title="Aprovação", files=files, logged=f.get_login())
+        return render_template("aprovacao.html", title="Aprovação", files=files)
     else:
-        flash("Efetue login para aprovar fotos")
+        flash("Usuário não autenticado")
         return redirect(url_for("login"))
