@@ -24,10 +24,12 @@ class Files():
     filenames = []
 
     def get_filenames(self):
-        return self.filenames
+        return File.query.filter_by(aprovada=True).all()
 
     def set_filenames(self, names):
-        self.filenames = names
+        for filename in names:
+            f = File.query.filter_by(name=filename).one()
+            f.set_aprovada(True)
 
 
 f = Files()
@@ -57,16 +59,17 @@ def index():
     files = []
     if request.method == "POST":
         selected = request.form.getlist("image")
-        f.set_filenames(selected)
-    else:
-        selected = f.get_filenames()
-    if not selected:
+        for filename in selected:
+            img = File.query.filter_by(name=filename).one()
+            img.set_aprovada(True)    
+    aprovadas = f.get_filenames()
+    if not aprovadas:
         flash("Nenhuma imagem aprovada")
-    for obj in selected:
+    for obj in aprovadas:
         url = s3.generate_presigned_url("get_object",
                                         Params={
                                             "Bucket": bucket,
-                                            "Key": obj
+                                            "Key": obj.name
                                         },
                                         ExpiresIn=3600)
         files.append(url)
@@ -119,6 +122,8 @@ def logout():
 @app.route("/aprovacao", methods=["GET", "POST"])
 def aprovacao():
     if current_user.is_authenticated:
+        for f in File.query.all():
+            f.set_aprovada(False)  
         files = {}
         cont = 0
         saved_files = File.query.all()
