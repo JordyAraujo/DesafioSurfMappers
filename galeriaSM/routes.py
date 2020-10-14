@@ -1,7 +1,7 @@
 from flask import render_template, flash, request, redirect, url_for
 from galeriaSM import app
 from werkzeug.utils import secure_filename
-from galeriaSM.login import LoginForm
+from galeriaSM.forms import LoginForm, UploadForm
 import os
 import boto3
 
@@ -50,7 +50,6 @@ def index():
     if request.method == "POST":
         selected = request.form.getlist('image')
         f.set_filenames(selected)
-        f.set_login(True)
     else:
         selected = f.get_filenames()
     if not selected:
@@ -68,21 +67,11 @@ def index():
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
-    if request.method == "POST":
-        if request.files:
-            image = request.files["image"]
-            if image.filename == "":
-                flash('No filename')
-                return redirect(url_for('upload'))
-            if allowed_image(image.filename):
-                filename = secure_filename(image.filename)
-                s3.upload_fileobj(image, 'galeriasmbucket', filename)
-                flash("Imagem salva")
-                return redirect(url_for('upload'))
-            else:
-                flash("Formato de arquivo não permitido")
-                return redirect(url_for('upload'))
-    return render_template("upload.html", logged=f.get_login())
+    form = UploadForm()
+    if form.validate_on_submit():
+        flash("Imagem salva")
+        return redirect(url_for('upload'))
+    return render_template('upload.html', title='Upload', form=form, logged=f.get_login())
 
 
 @app.route('/login', methods=["GET", "POST"])
@@ -91,21 +80,33 @@ def login():
     if form.validate_on_submit():
         flash("Seja bem vindo, {}!".format(
             form.username.data))
-        return redirect('/aprovacao')
+        f.set_login(True)
+        return redirect(url_for('aprovacao'))
     return render_template('login.html', title='Sign In', form=form, logged=f.get_login())
+
+
+@app.route('/logoff', methods=["GET", "POST"])
+def logoff():
+    flash("Usuário desconectado!")
+    f.set_login(False)
+    return render_template('index.html', title='Galeria', logged=f.get_login())
 
 
 @app.route("/aprovacao", methods=["GET", "POST"])
 def aprovacao():
-    files = {}
-    cont = 0
-    for obj in s3.list_objects_v2(Bucket=bucket)['Contents']:
-        url = s3.generate_presigned_url('get_object',
-                                        Params={
-                                            'Bucket': bucket,
-                                            'Key': obj['Key']
-                                        },
-                                        ExpiresIn=3600)
-        files[cont] = {'name': obj['Key'], 'url': url}
-        cont = cont + 1
-    return render_template('aprovacao.html', title='Aprovação', files=files, logged=f.get_login())
+    if f.get_login():
+        files = {}
+        cont = 0
+        for obj in s3.list_objects_v2(Bucket=bucket)['Contents']:
+            url = s3.generate_presigned_url('get_object',
+                                            Params={
+                                                'Bucket': bucket,
+                                                'Key': obj['Key']
+                                            },
+                                            ExpiresIn=3600)
+            files[cont] = {'name': obj['Key'], 'url': url}
+            cont = cont + 1
+        return render_template('aprovacao.html', title='Aprovação', files=files, logged=f.get_login())
+    else:
+        flash("Efetue login para aprovar fotos")
+        return redirect(url_for('login'))

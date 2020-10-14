@@ -1,0 +1,5 @@
+boto3==1.15.16
+Flask==1.1.2
+Flask-Bootstrap==3.3.7.1
+Flask-WTF==0.14.3
+python-dotenv==0.14.0
