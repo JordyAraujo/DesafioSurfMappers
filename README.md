@@ -35,7 +35,7 @@ source venv/bin/activate
 pip3 install -r requirements.txt
 touch .secrets.py
 ```
-> Definir as credenciais AWS_ACCESS_KEY_ID e AWS_SECRET_ACCESS_KEY em /.secrets.py
+> Definir as credenciais AWS_ACCESS_KEY_ID e AWS_SECRET_ACCESS_KEY, BUCKET e AWS_REGION_NAME em /.secrets.py
 ```sh
 flask run
 ```  
