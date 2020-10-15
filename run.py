@@ -1,0 +1,1 @@
+from galeriaSM import app
