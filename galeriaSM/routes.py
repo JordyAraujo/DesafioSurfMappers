@@ -61,7 +61,8 @@ def index():
         selected = request.form.getlist("image")
         for filename in selected:
             img = File.query.filter_by(name=filename).one()
-            img.set_aprovada(True)    
+            img.set_aprovada(True)
+            db.session.commit() 
     aprovadas = f.get_filenames()
     if not aprovadas:
         flash("Nenhuma imagem aprovada")
